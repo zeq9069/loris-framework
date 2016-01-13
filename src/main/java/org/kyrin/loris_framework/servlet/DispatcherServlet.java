@@ -97,8 +97,9 @@ public class DispatcherServlet extends HttpServlet {
 
 			//调用Action方法
 			Method actionMethod = handler.getActionMethod();
-			Object result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
-
+			Object result;
+			actionMethod.getParameterCount();
+			result = ReflectionUtil.invokeMethod(controllerBean, actionMethod,param);
 			//处理action方法返回值
 			if (result instanceof View) {
 				View view = (View) result;
@@ -111,11 +112,11 @@ public class DispatcherServlet extends HttpServlet {
 						for (Map.Entry<String, Object> entry : model.entrySet()) {
 							req.setAttribute(entry.getKey(), entry.getValue());
 						}
-						req.getRequestDispatcher(req.getContextPath() + path).forward(req, resp);
+						req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
 					}
 				}
 			} else if (result instanceof Data) {
-				//返回json数据
+				//返回json数据c
 				Data data = (Data) result;
 				Object model = data.getModel();
 				if (model != null) {
