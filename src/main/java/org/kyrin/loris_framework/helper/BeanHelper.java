@@ -18,14 +18,14 @@ public class BeanHelper {
 	 */
 	private static final Map<Class<?>, Object> BEAN_MAP = new HashMap<Class<?>, Object>();
 
-	static{
-		Set<Class<?>> beanClassSet=ClassHelper.getBeanClassSet();
-		for(Class<?> clazz:beanClassSet){
-			Object obj=ReflectionUtil.newInstance(clazz);
+	static {
+		Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();
+		for (Class<?> clazz : beanClassSet) {
+			Object obj = ReflectionUtil.newInstance(clazz);
 			BEAN_MAP.put(clazz, obj);
 		}
 	}
-	
+
 	/**
 	 * 获取	Bean Map
 	 */
@@ -42,5 +42,12 @@ public class BeanHelper {
 			throw new RuntimeException("can not get bean by class : " + clazz);
 		}
 		return (T) BEAN_MAP.get(clazz);
+	}
+
+	/**
+	 * 设置Bean 实例
+	 */
+	public static void setBean(Class<?> clazz, Object object) {
+		BEAN_MAP.put(clazz, object);
 	}
 }

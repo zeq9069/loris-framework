@@ -1,5 +1,6 @@
 package org.kyrin.loris_framework.core;
 
+import org.kyrin.loris_framework.helper.AopHelper;
 import org.kyrin.loris_framework.helper.BeanHelper;
 import org.kyrin.loris_framework.helper.ClassHelper;
 import org.kyrin.loris_framework.helper.ControllerHelper;
@@ -13,10 +14,14 @@ import org.kyrin.loris_framework.utils.ClassUtil;
  */
 public final class HelperLoad {
 
+	/**
+	 * AopHelper 需要在 IocHelper 之前加载
+	 */
 	public static void init() {
-		Class<?>[] classList = { ClassHelper.class, BeanHelper.class, ControllerHelper.class, IocHelper.class };
+		Class<?>[] classList = { ClassHelper.class, BeanHelper.class, AopHelper.class, IocHelper.class,
+				ControllerHelper.class };
 		for (Class<?> clazz : classList) {
-			ClassUtil.loadClass(clazz.getName());
+			ClassUtil.loadClass(clazz.getName(), true);
 		}
 	}
 }
