@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kyrin.loris_framework.annatation.Service;
 import org.kyrin.loris_framework.aop.AspectProxy;
 import org.kyrin.loris_framework.aop.Proxy;
 import org.kyrin.loris_framework.aop.ProxyManager;
 import org.kyrin.loris_framework.aop.annatation.Aspect;
+import org.kyrin.loris_framework.transaction.TransactionProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +53,8 @@ public final class AopHelper {
 
 	private static Map<Class<?>, Set<Class<?>>> createProxyMap() {
 		Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
-		Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
-		for (Class<?> proxyClass : proxyClassSet) {
-			if (proxyClass.isAnnotationPresent(Aspect.class)) {
-				Aspect aspect = proxyClass.getAnnotation(Aspect.class);
-				Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
-				proxyMap.put(proxyClass, targetClassSet);
-			}
-		}
+		addTransactionProxy(proxyMap);
+		addAspectProxy(proxyMap);
 		return proxyMap;
 	}
 
@@ -80,5 +76,21 @@ public final class AopHelper {
 			}
 		}
 		return targetMap;
+	}
+	
+	private static void addAspectProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
+		Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+		for (Class<?> proxyClass : proxyClassSet) {
+			if (proxyClass.isAnnotationPresent(Aspect.class)) {
+				Aspect aspect = proxyClass.getAnnotation(Aspect.class);
+				Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
+				proxyMap.put(proxyClass, targetClassSet);
+			}
+		}
+	}
+	
+	private static void addTransactionProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
+		Set<Class<?>> serviceClass=ClassHelper.getClassSetByAnnotation(Service.class);
+		proxyMap.put(TransactionProxy.class, serviceClass);
 	}
 }
