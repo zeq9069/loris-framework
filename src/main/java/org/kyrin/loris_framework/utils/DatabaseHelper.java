@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
@@ -12,6 +11,7 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.log4j.Logger;
+import org.kyrin.loris_framework.config.ConfigHelper;
 
 /**
  * 数据库操作类
@@ -26,7 +26,6 @@ public class DatabaseHelper {
 	private static final ThreadLocal<Connection> CONNS;
 	private static final BasicDataSource DATA_SOURCE;
 
-	private static String default_config = "config.properties";
 	private static final String USERNAME;
 	private static final String PASSWORD;
 	private static final String URL;
@@ -36,11 +35,10 @@ public class DatabaseHelper {
 		CONNS = new ThreadLocal<Connection>();
 		QUERY_RUNNER = new QueryRunner();
 
-		Properties pro = PropsUtils.loadProps(default_config);
-		USERNAME = PropsUtils.getString(pro, "jdbc.username");
-		PASSWORD = PropsUtils.getString(pro, "jdbc.password");
-		URL = PropsUtils.getString(pro, "jdbc.url");
-		DRIVER = PropsUtils.getString(pro, "jdbc.driver");
+		USERNAME = ConfigHelper.getJdbcUsername();
+		PASSWORD = ConfigHelper.getJdbcPassword();
+		URL = ConfigHelper.getJdbcUrl();
+		DRIVER = ConfigHelper.getJdbcDriver();
 
 		DATA_SOURCE = new BasicDataSource();
 		DATA_SOURCE.setUrl(URL);
@@ -64,46 +62,44 @@ public class DatabaseHelper {
 		}
 		return conn;
 	}
-	
-	public static void beginTransaction(){
-		Connection conn=getConnection();
+
+	public static void beginTransaction() {
+		Connection conn = getConnection();
 		try {
 			conn.setAutoCommit(false);
 		} catch (SQLException e) {
-			logger.error("begin transaction failure",e);
+			logger.error("begin transaction failure", e);
 			throw new RuntimeException(e);
-		}finally{
+		} finally {
 			CONNS.set(conn);
 		}
 	}
-	
-	public static void commitTransaction(){
-		Connection conn=getConnection();
+
+	public static void commitTransaction() {
+		Connection conn = getConnection();
 		try {
 			conn.commit();
 			conn.close();
 		} catch (SQLException e) {
-			logger.error("commit transaction failure",e);
+			logger.error("commit transaction failure", e);
 			throw new RuntimeException(e);
-		}finally{
+		} finally {
 			CONNS.remove();
 		}
 	}
-	
-	public static void rollbackTransaction(){
-		Connection conn=getConnection();
+
+	public static void rollbackTransaction() {
+		Connection conn = getConnection();
 		try {
 			conn.rollback();
 			conn.close();
 		} catch (SQLException e) {
-			logger.error("rollback transaction failure",e);
+			logger.error("rollback transaction failure", e);
 			throw new RuntimeException(e);
-		}finally{
+		} finally {
 			CONNS.remove();
 		}
 	}
-	
-	
 
 	/**
 	 * 查询

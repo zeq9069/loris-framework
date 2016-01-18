@@ -32,7 +32,7 @@ import org.kyrin.loris_framework.utils.StreamUtil;
 import org.kyrin.loris_framework.utils.StringUtil;
 
 /**
- * 请求分发器
+ * 请求分发器 （存在一个bug，当上传的参数是个数组时，解析不全的问题）
  * @author kyrin
  *
  */
@@ -94,12 +94,10 @@ public class DispatcherServlet extends HttpServlet {
 				}
 			}
 			Param param = new Param(paramMap);
-
 			//调用Action方法
 			Method actionMethod = handler.getActionMethod();
 			Object result;
-			actionMethod.getParameterCount();
-			result = ReflectionUtil.invokeMethod(controllerBean, actionMethod,param);
+			result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
 			//处理action方法返回值
 			if (result instanceof View) {
 				View view = (View) result;

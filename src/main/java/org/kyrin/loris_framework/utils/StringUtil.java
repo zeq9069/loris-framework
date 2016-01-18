@@ -10,6 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 public class StringUtil {
 
 	/**
+	 * 字符串分隔符
+	 */
+	public static final String SEPARAETOR = String.valueOf((char) 29);
+
+	/**
 	 * 判断是否为空
 	 */
 	public static boolean isEmpty(String value) {

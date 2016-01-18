@@ -36,7 +36,12 @@ public class ReflectionUtil {
 		Object result;
 		method.setAccessible(true);
 		try {
-			result = method.invoke(obj,args);
+			if (method.getParameterCount() == 0) {
+				result = method.invoke(obj);
+			} else {
+				result = method.invoke(obj, args);
+			}
+
 		} catch (Exception e) {
 			logger.error("invoke method failure", e);
 			throw new RuntimeException(e);

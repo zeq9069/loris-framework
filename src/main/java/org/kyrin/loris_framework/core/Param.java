@@ -1,59 +1,130 @@
 package org.kyrin.loris_framework.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.kyrin.loris_framework.utils.CastUtil;
+import org.kyrin.loris_framework.utils.CollectionUtil;
+import org.kyrin.loris_framework.utils.StringUtil;
 
 /**
- * 请求参数对象
+ * 请求参数对象,所有的参数可分为两类：表单参数和文件参数
  * @author kyrin
  *
  */
 public class Param {
 
-	private Map<String, Object> paramMap;
+	//文件参数
+	private List<FileParam> fileParamList;
 
-	public Param(Map<String, Object> paramMap) {
-		this.paramMap = paramMap;
+	//表单参数
+	private List<FormParam> formParamList;
+
+	public Param(List<FormParam> formParamList) {
+		this.formParamList = formParamList;
+	}
+
+	public Param(List<FormParam> formParamList, List<FileParam> fileParamList) {
+		this.fileParamList = fileParamList;
+		this.formParamList = formParamList;
 	}
 
 	/**
-	 * 根据参数名获取long型参数
+	 * 获取请求参数映射
 	 */
-	public long getLong(String name) {
-		return CastUtil.castLong(paramMap.get(name));
+	public Map<String, Object> getFieldMap() {
+		Map<String, Object> fieldMap = new HashMap<String, Object>();
+		if (CollectionUtil.isNotEmpty(formParamList)) {
+			for (FormParam formParam : formParamList) {
+				String fieldName = formParam.getFieldName();
+				Object fieldValue = formParam.getFieldValue();
+				if (fieldMap.containsKey(fieldName)) {
+					fieldValue = fieldMap.get(fieldName) + StringUtil.SEPARAETOR + fieldValue;
+				}
+				fieldMap.put(fieldName, fieldValue);
+			}
+		}
+		return fieldMap;
 	}
 
 	/**
-	 * 根据参数名获取int型参数
+	 * 获取上传文件参数
 	 */
-	public int getInt(String name) {
-		return CastUtil.castInt(paramMap.get(name));
+	public Map<String, List<FileParam>> getFileMap() {
+		Map<String, List<FileParam>> fileMap = new HashMap<String, List<FileParam>>();
+		if (CollectionUtil.isNotEmpty(fileParamList)) {
+			for (FileParam fileParam : fileParamList) {
+				String fieldName = fileParam.getFieldName();
+				List<FileParam> fileParamList;
+				if (fileMap.containsKey(fieldName)) {
+					fileParamList = fileMap.get(fieldName);
+				} else {
+					fileParamList = new ArrayList<FileParam>();
+				}
+				fileParamList.add(fileParam);
+				fileMap.put(fieldName, fileParamList);
+			}
+		}
+		return fileMap;
 	}
 
 	/**
-	 * 根据参数名获取String型参数
+	 * 获取所有上传文件
+	 */
+	public List<FileParam> getFileList(String fieldName) {
+		return getFileMap().get(fieldName);
+	}
+
+	/**
+	 * 获取唯一上传文件 
+	 */
+	public FileParam getFormList(String fieldName) {
+		List<FileParam> fileParamList = getFileList(fieldName);
+		if (CollectionUtil.isNotEmpty(fileParamList) && fileParamList.size() == 1) {
+			return fileParamList.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * 根据参数名获取 String 类型参数 
 	 */
 	public String getString(String name) {
-		return CastUtil.castString(paramMap.get(name));
+		return CastUtil.castString(getFieldMap().get(name));
 	}
 
 	/**
-	 * 根据参数名获取boolean型参数
+	 * 根据参数名获取 Integer 类型参数 
 	 */
-	public boolean getBoolean(String name) {
-		return CastUtil.castBoolean(paramMap.get(name));
+	public int getInt(String name) {
+		return CastUtil.castInt(getFieldMap().get(name));
 	}
 
 	/**
-	 * 根据参数名获取boolean型参数
+	 * 根据参数名获取 long 类型参数 
+	 */
+	public long getLong(String name) {
+		return CastUtil.castLong(getFieldMap().get(name));
+	}
+
+	/**
+	 * 根据参数名获取 double 类型参数 
 	 */
 	public double getDouble(String name) {
-		return CastUtil.castDouble(paramMap.get(name));
+		return CastUtil.castDouble(getFieldMap().get(name));
 	}
 
-	public Map<String, Object> getParamMap() {
-		return paramMap;
+	/**
+	 * 根据参数名获取 boolean 类型参数 
+	 */
+	public boolean getBoolean(String name) {
+		return CastUtil.castBoolean(getFieldMap().get(name));
+	}
+
+	public boolean isEmpty() {
+		return CollectionUtil.isEmpty(formParamList) && CollectionUtil.isEmpty(fileParamList);
 	}
 
 }

@@ -61,4 +61,11 @@ public class ConfigHelper {
 	public static String getAppAssertPath() {
 		return PropsUtils.getString(PRO, ConfigConstant.APP_ASSERT_PATH, "/assert/");
 	}
+
+	/**
+	 * 获取上传文件大小的限制
+	 */
+	public static int getAppUploadLimit() {
+		return PropsUtils.getInt(PRO, ConfigConstant.APP_UPLOAD_LIMIT);
+	}
 }

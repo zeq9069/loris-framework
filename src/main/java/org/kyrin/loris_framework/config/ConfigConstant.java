@@ -17,4 +17,6 @@ public interface ConfigConstant {
 	String APP_BASE_PACKAGE = "loris.framework.app.base_package";
 	String APP_JSP_PATH = "loris.framework.app.jsp_path";
 	String APP_ASSERT_PATH = "loris.framework.app.assert_path";
+
+	String APP_UPLOAD_LIMIT = "loris.framework.app.upload_limit";
 }
