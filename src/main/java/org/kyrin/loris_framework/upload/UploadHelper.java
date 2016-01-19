@@ -1,7 +1,11 @@
 package org.kyrin.loris_framework.upload;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +22,7 @@ import org.kyrin.loris_framework.core.FormParam;
 import org.kyrin.loris_framework.core.Param;
 import org.kyrin.loris_framework.utils.CollectionUtil;
 import org.kyrin.loris_framework.utils.FileUtil;
+import org.kyrin.loris_framework.utils.StreamUtil;
 import org.kyrin.loris_framework.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,10 +108,28 @@ public final class UploadHelper {
 		try {
 			if (fileParam != null) {
 				String filePath = basePath + fileParam.getFileName();
-
+				FileUtil.createFile(filePath);
+				InputStream inputStream = new BufferedInputStream(fileParam.getInputStream());
+				OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+				StreamUtil.copyStream(inputStream, outputStream);
 			}
 
 		} catch (Exception e) {
+			logger.error("upload file failure",e);
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void uploadFile(String basePath,List<FileParam> fileParmList){
+		try{
+		if(CollectionUtil.isNotEmpty(fileParmList)){
+			for(FileParam fileParam : fileParmList){
+				uploadFile(basePath, fileParam);
+			}
+		}
+		}catch(Exception e){
+			logger.error("upload file failure",e);
+			throw new RuntimeException(e);
 		}
 	}
 }

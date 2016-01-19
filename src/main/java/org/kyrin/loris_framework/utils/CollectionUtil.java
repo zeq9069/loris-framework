@@ -40,5 +40,4 @@ public class CollectionUtil {
 	public static boolean isNotEmpty(Map<?, ?> map) {
 		return !isEmpty(map);
 	}
-
 }
